@@ -2,62 +2,6 @@
 #include "Convolution.cpp"
 #include <iostream>
 
-void printmatrix(int** matrix, int rows, int cols){
-    for(int i =0; i<rows; i++){
-        for(int j = 0; j<cols; j++){
-            std::cout << matrix[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-void printmatrix(bool** matrix, int rows, int cols){
-    for(int i =0; i<rows; i++){
-        for(int j = 0; j<cols; j++){
-            std::cout << matrix[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-int** createMatrix(int rows, int cols, int initValue){
-    //alloc matrix
-    int** matrix = new int*[rows];
-    
-    for (int i = 0; i < rows; ++i){
-        matrix[i] = new int[cols];
-    }
-
-    //Init matrix
-    for(int i =0; i<rows; i++){
-        for(int j = 0; j<cols; j++){
-            matrix[i][j] = initValue;
-        }
-    }
-
-    return matrix;
-}
-bool** createMatrix(int rows, int cols, bool initValue){
-    //alloc matrix
-    bool** matrix = new bool*[rows];
-    
-    for (int i = 0; i < rows; ++i){
-        matrix[i] = new bool[cols];
-    }
-
-    //Init matrix
-    for(int i = 0; i<rows; i++){
-        for(int j = 0; j<cols; j++){
-            matrix[i][j] = initValue;
-        }
-    }
-
-    return matrix;
-}
-void deleteMatrix(int** matrix, int rows){
-    for (int i = 0; i < rows; ++i)
-        {delete [] matrix[i];}
-    delete [] matrix;
-}
 
 int main()
 {   
@@ -180,17 +124,25 @@ int main()
     // printmatrix(matrix3,10,10);
     // std::cout<<std::endl;
 
-    //power
-    std::cout<<"Fungsi power"<<std::endl;
-    power(matrix2,15,0.3,matrix3,10,10);
-    printmatrix(matrix3,10,10);
-    std::cout<<std::endl;
+    // //power
+    // std::cout<<"Fungsi power"<<std::endl;
+    // power(matrix2,15,0.3,matrix3,10,10);
+    // printmatrix(matrix3,10,10);
+    // std::cout<<std::endl;
 
     //Convolution
     std::cout<<"Fungsi Convolution"<<std::endl;
-    int** kernel = createMatrix(3,3,1);
+    double** kernel = createMatrix(3,3,0.2);
     convolute(matrix2,matrix3,kernel,10,10);
     printmatrix(matrix3,10,10);
+    translation(matrix3,matrix3,10,10,3,3);
+    printmatrix(matrix3,10,10);
+    std::cout<<std::endl;
+    gaussian_blur(matrix3,matrix4,10,10);
+    printmatrix(matrix4,10,10);
+    std::cout<<std::endl;
+    edge_gradient(matrix3,matrix4,100,10,10);
+    printmatrix(matrix4,10,10);
     std::cout<<std::endl;
 
     //garbage

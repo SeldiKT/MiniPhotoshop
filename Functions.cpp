@@ -3,6 +3,86 @@
 #include <math.h> 
 
 
+int** createMatrix(int rows, int cols, int initValue){
+    //alloc matrix
+    int** matrix = new int*[rows];
+    
+    for (int i = 0; i < rows; ++i){
+        matrix[i] = new int[cols];
+    }
+
+    //Init matrix
+    for(int i =0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            matrix[i][j] = initValue;
+        }
+    }
+
+    return matrix;
+}
+bool** createMatrix(int rows, int cols, bool initValue){
+    //alloc matrix
+    bool** matrix = new bool*[rows];
+    
+    for (int i = 0; i < rows; ++i){
+        matrix[i] = new bool[cols];
+    }
+
+    //Init matrix
+    for(int i = 0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            matrix[i][j] = initValue;
+        }
+    }
+
+    return matrix;
+}
+double** createMatrix(int rows, int cols, double initValue){
+    //alloc matrix
+    double** matrix = new double*[rows];
+    
+    for (int i = 0; i < rows; ++i){
+        matrix[i] = new double[cols];
+    }
+
+    //Init matrix
+    for(int i =0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            matrix[i][j] = initValue;
+        }
+    }
+
+    return matrix;
+}
+void deleteMatrix(int** matrix, int rows){
+    for (int i = 0; i < rows; ++i)
+        {delete [] matrix[i];}
+    delete [] matrix;
+}
+void printmatrix(int** matrix, int rows, int cols){
+    for(int i =0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+void printmatrix(bool** matrix, int rows, int cols){
+    for(int i =0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+void printmatrix(double** matrix, int rows, int cols){
+    for(int i =0; i<rows; i++){
+        for(int j = 0; j<cols; j++){
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
 
 void biner(int**  A, bool**  B, int T, int N, int M)
 /* Membuat citra biner dari citra A berdasarkan nilai ambang
@@ -380,7 +460,7 @@ void power(int** A, int c, float y, int** B, int N, int M)
 }
 
 
-void convolute(int **input, int **output, int **kernel, int rows, int cols){
+void convolute(int **input, int **output, double **kernel, int rows, int cols){
         int convolute = 0; // This holds the convolution results for an index.
         int x, y; // Used for input matrix index
 
@@ -399,11 +479,13 @@ void convolute(int **input, int **output, int **kernel, int rows, int cols){
                     {
                         // Convolute here.
                         convolute += kernel[k][l] * input[x][y];
+						// std::cout<<input[x][y]<<std::endl;
                         y++; // Move right.
                     }
                     x++; // Move down.
                     y = j-1; // Restart column position
                 }
+				// std::cout<<convolute<<std::endl;
                 if (convolute < 0)
 					output[i][j] = 0;
 				else
@@ -416,4 +498,78 @@ void convolute(int **input, int **output, int **kernel, int rows, int cols){
                 convolute = 0; // Needed before we move on to the next index.
             }
         }
-    }
+}
+
+void edge_gradient(int **input, int **output, float Threshold, int rows, int cols){
+		int convolute_x = 0; // This holds the convolution results for an index.
+        int convolute_y= 0;
+		int convoluted = 0;
+		int x, y; // Used for input matrix index
+		int** kernel_x = createMatrix(2,2,1);
+		kernel_x[0][0]=-1;kernel_x[1][0]=-1;kernel_x[0][1]=1;kernel_x[1][1]=1;
+		int** kernel_y = createMatrix(2,2,1);
+		kernel_y[0][0]=1;kernel_y[1][0]=-1;kernel_y[0][1]=1;kernel_y[1][1]=-1;
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+                
+				x = i-1;
+                y = j-1;
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 2; k++)
+                {
+                    for (int l = 0; l < 2; l++)
+                    {
+                        // Convolute here.
+                        convolute_x += kernel_x[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+
+				x = i-1;
+                y = j-1;
+				for (int k = 0; k < 2; k++)
+                {
+                    for (int l = 0; l < 2; l++)
+                    {
+                        // Convolute here.
+                        convolute_y += kernel_y[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+				convoluted = abs(convolute_x) + abs(convolute_y);
+				if(convoluted>=Threshold){
+					output[i][j] = 255; 
+				}
+				else{
+					output[i][j]= 0;
+				}
+				
+				convolute_x = 0;
+				convolute_y = 0;
+                convoluted = 0; // Needed before we move on to the next index.
+            }
+        }
+}
+
+void gaussian_blur(int **input, int **output, int rows, int cols){
+	double** kernel = createMatrix(3,3,1.0);
+	kernel[0][0]=1.0/16;
+	kernel[0][1]=1.0/8;
+	kernel[0][2]=1.0/16;
+	kernel[1][0]=1.0/8;
+	kernel[1][1]=1.0/4;
+	kernel[1][2]=1.0/8;
+	kernel[2][0]=1.0/16;
+	kernel[2][1]=1.0/8;
+	kernel[2][2]=1.0/16;
+	printmatrix(kernel,3,3);
+	convolute(input,output,kernel,rows,cols);
+}
