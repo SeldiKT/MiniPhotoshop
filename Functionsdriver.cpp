@@ -187,6 +187,11 @@ int main()
     std::cout<<std::endl;
 
     //Convolution
+    std::cout<<"Fungsi Convolution"<<std::endl;
+    int** kernel = createMatrix(3,3,1);
+    convolute(matrix2,matrix3,kernel,10,10);
+    printmatrix(matrix3,10,10);
+    std::cout<<std::endl;
 
     //garbage
     deleteMatrix(matrix1,10);

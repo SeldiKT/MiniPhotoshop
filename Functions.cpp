@@ -380,3 +380,40 @@ void power(int** A, int c, float y, int** B, int N, int M)
 }
 
 
+void convolute(int **input, int **output, int **kernel, int rows, int cols){
+        int convolute = 0; // This holds the convolution results for an index.
+        int x, y; // Used for input matrix index
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+                x = i-1;
+                y = j-1;
+
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute += kernel[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+                if (convolute < 0)
+					output[i][j] = 0;
+				else
+					if (convolute > 255)
+						output[i][j] = 255;
+					else
+						output[i][j] = convolute;
+				 // Add result to output matrix.
+
+                convolute = 0; // Needed before we move on to the next index.
+            }
+        }
+    }
