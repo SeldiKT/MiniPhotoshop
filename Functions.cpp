@@ -1,9 +1,10 @@
 ﻿#include <stdio.h>
+#include <iostream>
 #include <math.h> 
 
 
 
-void biner(int**  A, int**  B, int T, int N, int M)
+void biner(int**  A, bool**  B, int T, int N, int M)
 /* Membuat citra biner dari citra A berdasarkan nilai ambang
 (threshold) T yang dispesifikasikan. Ukuran citra adalah N  M.
 citra_biner adalah tipe data untuk citra biner).
@@ -41,7 +42,9 @@ sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 	for (i = 0; i < N; i++)
 		for (j = 0; j < M; j++)
 		{
+			std::cout<< A[i][j] <<" "<< B[i][j] <<std::endl;
 			temp = A[i][j] + b;
+			std::cout<< temp <<std::endl;
 			/* clipping */
 			if (temp < 0)
 				B[i][j] = 0;
@@ -63,23 +66,24 @@ void grayscale(int** R, int** G, int** B, int** Gray, int N, int M) {
 }
 
 void addvalues(int** A, int** B, int** C, int N, int M) {
-	int i, j, temp;
+	int i, j;
 	for (i = 0; i < N; i++) {
-		for (i = 0; i < M; i++) {
-			int temp = B[i][j] + A[i][j];
+		for (j = 0; j < M; j++) {
+			int temp = A[i][j] + B[i][j];
 			if (temp > 255) {
 				C[i][j] = 255;
 			}
 			else {
 				C[i][j] = temp;
 			}
+			temp = 0;
 		}
 	}
 }
 void substractvalues(int** A, int** B, int** C, int N, int M) {
-	int i, j, temp;
+	int i, j;
 	for (i = 0; i < N; i++) {
-		for (i = 0; i < M; i++) {
+		for (j = 0; j < M; j++) {
 			int temp = A[i][j] - B[i][j];
 			if (temp != 0) {
 				C[i][j] = 255;
@@ -87,6 +91,7 @@ void substractvalues(int** A, int** B, int** C, int N, int M) {
 			else {
 				C[i][j] = temp;
 			}
+			temp=0;
 		}
 	}
 }
@@ -94,7 +99,7 @@ void substractvalues(int** A, int** B, int** C, int N, int M) {
 void addvalues(int** A, int B, int** C, int N, int M) {
 	int i, j, temp;
 	for (i = 0; i < N; i++) {
-		for (i = 0; i < M; i++) {
+		for (j = 0; j < M; j++) {
 			int temp = B + A[i][j];
 			if (temp > 255) {
 				C[i][j] = 255;
@@ -102,13 +107,14 @@ void addvalues(int** A, int B, int** C, int N, int M) {
 			else {
 				C[i][j] = temp;
 			}
+			temp = 0;
 		}
 	}
 }
 void substractvalues(int** A, int B, int** C, int N, int M) {
 	int i, j, temp;
 	for (i = 0; i < N; i++) {
-		for (i = 0; i < M; i++) {
+		for (j = 0; j < M; j++) {
 			int temp = A[i][j] - B;
 			if (temp != 0) {
 				C[i][j] = 255;
@@ -116,6 +122,7 @@ void substractvalues(int** A, int B, int** C, int N, int M) {
 			else {
 				C[i][j] = temp;
 			}
+			temp=0;
 		}
 	}
 }
@@ -186,10 +193,22 @@ void translation(int** A, int** B, int N, int M, int m, int n)
 /* Mentranslasi citra A sejauh m, n menjadi citra B. Ukuran citra N  M. */
 {
 	int i, j;
-	for (i = 0; i <= N - 1; i++) {
-		for (j = 0; j <= M - 1; j++)
+	for (i = 0; i < m; i++) {
+		for (j = 0; j < M; j++)
 		{
-			B[i + m][j + n] = A[i][j];//NOTDONE
+			B[i][j] = 0;
+		}
+	}
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < N; j++)
+		{
+			B[j][i] = 0;
+		}
+	}
+	for (i = m; i <= N - 1; i++) {
+		for (j = n; j <= M - 1; j++)
+		{
+			B[i][j] = A[i][j];//NOTDONE
 		}
 	}
 }
@@ -225,7 +244,7 @@ Ukuran citra adalah N  M. Hasil rotasi disimpan di dalam cira B.
 		k--;
 	}
 }
-void vertical_flip(int** A, int** B, int N, int M)
+void horizontal_flip(int** A, int** B, int N, int M)
 /* Flipping vertikal (pencerminan terhadap sumbu-X) terhadap citar A. 
 Ukuran citra adalah N  M. Hasil flipping disimpan di dalam citra B.
 */
@@ -241,7 +260,7 @@ Ukuran citra adalah N  M. Hasil flipping disimpan di dalam citra B.
 		}
 	}
 }
-void horizontal_flip(int** A, int** B, int N, int M)
+void vertical_flip(int** A, int** B, int N, int M)
 /* Flipping vertikal (pencerminan terhadap sumbu-X) terhadap citar A. 
 Ukuran citra adalah N  M. Hasil flipping disimpan di dalam citra B.
 */
