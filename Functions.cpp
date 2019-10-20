@@ -191,6 +191,7 @@ adalah N  M.
 
 void translation(int** A, int** B, int N, int M, int m, int n)
 /* Mentranslasi citra A sejauh m, n menjadi citra B. Ukuran citra N  M. */
+// CUMA BISA POSITIF VALUE
 {
 	int i, j;
 	for (i = 0; i < m; i++) {

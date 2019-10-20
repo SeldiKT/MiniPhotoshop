@@ -127,11 +127,11 @@ int main()
     // printmatrix(matrixbool2,10,10);
     // std::cout<<std::endl;
 
-    //translation blum
-    std::cout<<"Fungsi translasi"<<std::endl;
-    translation(matrix2,matrix3,10,10,1,1);
-    printmatrix(matrix3,10,10);
-    std::cout<<std::endl;
+    // //translation blum
+    // std::cout<<"Fungsi translasi"<<std::endl;
+    // translation(matrix2,matrix3,10,10,1,1);
+    // printmatrix(matrix3,10,10);
+    // std::cout<<std::endl;
 
     // //rotation
     // std::cout<<"Fungsi rotasi"<<std::endl;
