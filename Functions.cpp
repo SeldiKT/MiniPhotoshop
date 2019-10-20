@@ -278,10 +278,11 @@ Ukuran citra adalah N  M. Hasil flipping disimpan di dalam citra B.
 	}
 }
 
-void zoom_out(int** A, int** B, int N, int M)
+void zoom_in(int** A, int** B, int N, int M)
 /* perbesaran citra A dengan faktor skala 2
-Ukuran citra adalah N  M. Hasil perbesaran disimpa d dalam citra B.
+Ukuran citra adalah N  M. Hasil perbesaran disimpan dalam citra B.
 */
+// B ukurannya dua kali dari A
 {
 	int i, j, k, m, n;
 	m=0; n=0;
@@ -299,19 +300,21 @@ Ukuran citra adalah N  M. Hasil perbesaran disimpa d dalam citra B.
 		n=0;
 	}
 }
-void zoom_in(int** A, int** B, int N, int M)
-/* perbesaran citra A dengan faktor skala 2
+void zoom_out(int** A, int** B, int N, int M)
+/* perbesaran citra A dengan faktor skala 1/2
 Ukuran citra adalah N  M. Hasil perbesaran disimpa d dalam citra B.
 */
+// N dan M Ukuran A, B sebisa mungkin ukurannya setengah dari A
 {
 	int i, j, k, m, n;
 	m=0;
-	for (i=0; i<=N-1; i+2)
+	for (i=0; i<=N-1; i+=2)
 	{
 		n=0;
 		int temp = 0;
-		for (j=0; j<=M-1; j+2)
+		for (j=0; j<=M-1; j+=2)
 		{
+			temp = 0;
 			temp += A[i][j];
 			temp += A[i][j+1];
 			temp += A[i+1][j];
@@ -319,13 +322,12 @@ Ukuran citra adalah N  M. Hasil perbesaran disimpa d dalam citra B.
 			B[m][n] = temp/4 ;
 			n+=1;
 		}
+		
 		m+=1;
 	}
 }
 
 void log_operation(int** A, int c, int** B, int N, int M)
-/* Pencerahan citra dengan menjumlahkan setiap pixel di dalam citra A dengan
-sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 {
 	int i, j, temp;
 	for (i = 0; i < N; i++)
@@ -343,8 +345,6 @@ sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 		}
 }
 void invlog_operation(int** A, int c, int** B, int N, int M)
-/* Pencerahan citra dengan menjumlahkan setiap pixel di dalam citra A dengan
-sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 {
 	int i, j, temp;
 	for (i = 0; i < N; i++)
@@ -362,8 +362,6 @@ sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 		}
 }
 void power(int** A, int c, float y, int** B, int N, int M)
-/* Pencerahan citra dengan menjumlahkan setiap pixel di dalam citra A dengan
-sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 {
 	int i, j, temp;
 	for (i = 0; i < N; i++)
@@ -380,3 +378,5 @@ sebuah skalar b. Hasil disimpan di dalam citra B. Citra berukuran N  M. */
 					B[i][j] = temp;
 		}
 }
+
+

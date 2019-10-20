@@ -69,8 +69,10 @@ int main()
     bool** matrixbool = createMatrix(10,10,false);
     bool** matrixbool2 = createMatrix(10,10,false);
 
+    int** matrixbig = createMatrix(20,20,1);
+
     //Print Inisial matrix
-    printmatrix(matrix3,10,10);
+    printmatrix(matrix2,10,10);
     std::cout<<std::endl;
 
     // //Biner
@@ -158,7 +160,14 @@ int main()
     // std::cout<<std::endl;
 
     // //zoom
-
+    // std::cout<<"Fungsi zoom in"<<std::endl;
+    // zoom_in(matrix2,matrixbig,10,10);
+    // printmatrix(matrixbig,20,20);
+    // std::cout<<"Fungsi zoom out"<<std::endl;
+    // zoom_out(matrix2,matrix3,10,10);
+    // printmatrix(matrix3,10,10);
+    // std::cout<<std::endl;
+    
     // //log
     // std::cout<<"Fungsi log"<<std::endl;
     // matrix2[1][1]=0;
@@ -172,6 +181,10 @@ int main()
     // std::cout<<std::endl;
 
     //power
+    std::cout<<"Fungsi power"<<std::endl;
+    power(matrix2,15,0.3,matrix3,10,10);
+    printmatrix(matrix3,10,10);
+    std::cout<<std::endl;
 
     //Convolution
 
