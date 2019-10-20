@@ -8,7 +8,7 @@ int main()
     int** matrix1 = createMatrix(10,10,0);
     int** matrix2 = createMatrix(10,10,124);
     int** matrix3 = createMatrix(10,10,255);
-    int** matrix4 = createMatrix(10,10,255);
+    int** matrix4 = createMatrix(10,10,0);
 
     bool** matrixbool = createMatrix(10,10,false);
     bool** matrixbool2 = createMatrix(10,10,false);
@@ -130,19 +130,57 @@ int main()
     // printmatrix(matrix3,10,10);
     // std::cout<<std::endl;
 
+    int** matrix12 = createMatrix(12,12,124);
+    int** matrix13 = createMatrix(12,12,0);
+    int** matrix14 = createMatrix(12,12,0);
     //Convolution
     std::cout<<"Fungsi Convolution"<<std::endl;
-    double** kernel = createMatrix(3,3,0.2);
-    convolute(matrix2,matrix3,kernel,10,10);
-    printmatrix(matrix3,10,10);
-    translation(matrix3,matrix3,10,10,3,3);
-    printmatrix(matrix3,10,10);
-    std::cout<<std::endl;
-    gaussian_blur(matrix3,matrix4,10,10);
-    printmatrix(matrix4,10,10);
-    std::cout<<std::endl;
-    edge_gradient(matrix3,matrix4,100,10,10);
-    printmatrix(matrix4,10,10);
+    double** kernel = createMatrix(3,3,0.1);
+    convolute(matrix12,matrix13,kernel,12,12);
+    printmatrix(matrix13,12,12);
+    translation(matrix13,matrix13,12,12,3,3);
+    std::cout<<"Translated"<<std::endl;
+    printmatrix(matrix13,12,12);
+
+    //Conv stuff
+    std::cout<<"Highpasses filter"<<std::endl;
+    highpass1(matrix13,matrix14,12,12);
+    printpaddedmatrix(matrix14,10,10);
+    highpass2(matrix13,matrix14,12,12);
+    printpaddedmatrix(matrix14,10,10);
+    highpass3(matrix13,matrix14,12,12);
+    printpaddedmatrix(matrix14,10,10);
+
+    std::cout<<"median filter"<<std::endl;
+    median_filter(matrix13,matrix14,12,12);
+    printpaddedmatrix(matrix14,10,10);
+
+    //EDGE
+    // std::cout<<"Gaussian Blur"<<std::endl;
+    // gaussian_blur(matrix13,matrix14,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Edge gradient"<<std::endl;
+    // edge_gradient(matrix13,matrix14,100,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Laplace"<<std::endl;
+    // edge_laplace(matrix13,matrix14,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"LoG"<<std::endl;
+    // LoG(matrix13,matrix14,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Edge Sobel"<<std::endl;
+    // edge_sobel(matrix13,matrix14,400,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Edge Prewitt"<<std::endl;
+    // edge_prewitt(matrix13,matrix14,300,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Edge Roberts"<<std::endl;
+    // edge_roberts(matrix13,matrix14,100,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+    // std::cout<<"Edge Canny"<<std::endl;
+    // edge_canny(matrix13,matrix14,100,100,12,12);
+    // printpaddedmatrix(matrix14,10,10);
+
     std::cout<<std::endl;
 
     //garbage

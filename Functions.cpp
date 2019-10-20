@@ -1,7 +1,19 @@
 ﻿#include <stdio.h>
 #include <iostream>
-#include <math.h> 
+#include <math.h>
 
+void selectionSort(int a[], int n) {
+   int i, j, min, temp;
+   for (i = 0; i < n - 1; i++) {
+      min = i;
+      for (j = i + 1; j < n; j++)
+         if (a[j] < a[min])
+            min = j;
+      temp = a[i];
+      a[i] = a[min];
+      a[min] = temp;
+   }
+}
 
 int** createMatrix(int rows, int cols, int initValue){
     //alloc matrix
@@ -78,6 +90,14 @@ void printmatrix(bool** matrix, int rows, int cols){
 void printmatrix(double** matrix, int rows, int cols){
     for(int i =0; i<rows; i++){
         for(int j = 0; j<cols; j++){
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+void printpaddedmatrix(int** matrix, int rows, int cols){
+    for(int i =1; i<=rows; i++){
+        for(int j = 1; j<=cols; j++){
             std::cout << matrix[i][j] << " ";
         }
         std::cout << std::endl;
@@ -165,8 +185,8 @@ void substractvalues(int** A, int** B, int** C, int N, int M) {
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < M; j++) {
 			int temp = A[i][j] - B[i][j];
-			if (temp != 0) {
-				C[i][j] = 255;
+			if (temp <= 0) {
+				C[i][j] = 0;
 			}
 			else {
 				C[i][j] = temp;
@@ -196,7 +216,7 @@ void substractvalues(int** A, int B, int** C, int N, int M) {
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < M; j++) {
 			int temp = A[i][j] - B;
-			if (temp != 0) {
+			if (temp <= 0) {
 				C[i][j] = 255;
 			}
 			else {
@@ -459,6 +479,43 @@ void power(int** A, int c, float y, int** B, int N, int M)
 		}
 }
 
+void median_filter(int **input, int **output, int rows, int cols){
+		 // This holds the convolution results for an index.
+        int x, y; // Used for input matrix index
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+                x = i-1;
+                y = j-1;
+				int convolute[9] = {0};
+
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute[k*3+l] = input[x][y];
+						// std::cout<<input[x][y]<<std::endl;
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+				// std::cout<<convolute<<std::endl;
+				selectionSort(convolute,9);
+				// for (int z = 0; z < 9; z++){
+				// 	std::cout<< convolute[z] <<" ";
+				// }
+				// std::cout<<std::endl;
+				output[i][j] = (convolute[3]+convolute[4])/2;
+				 // Add result to output matrix.
+            }
+        }
+}
 
 void convolute(int **input, int **output, double **kernel, int rows, int cols){
         int convolute = 0; // This holds the convolution results for an index.
@@ -498,6 +555,67 @@ void convolute(int **input, int **output, double **kernel, int rows, int cols){
                 convolute = 0; // Needed before we move on to the next index.
             }
         }
+}
+
+void highpass1(int **input, int **output, int rows, int cols){
+	//detects edge
+	double** kernel = createMatrix(3,3,1.0);
+	kernel[0][0]=-1;
+	kernel[0][1]=-1;
+	kernel[0][2]=-1;
+	kernel[1][0]=-1;
+	kernel[1][1]=8;
+	kernel[1][2]=-1;
+	kernel[2][0]=-1;
+	kernel[2][1]=-1;
+	kernel[2][2]=-1;
+	// printmatrix(kernel,3,3);
+	convolute(input,output,kernel,rows,cols);
+}
+void highpass2(int **input, int **output, int rows, int cols){
+	double** kernel = createMatrix(3,3,1.0);
+	kernel[0][0]=-1;
+	kernel[0][1]=-1;
+	kernel[0][2]=-1;
+	kernel[1][0]=-1;
+	kernel[1][1]=9;
+	kernel[1][2]=-1;
+	kernel[2][0]=-1;
+	kernel[2][1]=-1;
+	kernel[2][2]=-1;
+	// printmatrix(kernel,3,3);
+	convolute(input,output,kernel,rows,cols);
+}
+void highpass3(int **input, int **output, int rows, int cols){
+	double** kernel = createMatrix(3,3,1.0);
+	kernel[0][0]=0;
+	kernel[0][1]=-1;
+	kernel[0][2]=0;
+	kernel[1][0]=-1;
+	kernel[1][1]=5;
+	kernel[1][2]=-1;
+	kernel[2][0]=0;
+	kernel[2][1]=-1;
+	kernel[2][2]=0;
+	// printmatrix(kernel,3,3);
+	convolute(input,output,kernel,rows,cols);
+}
+
+void unsharp_masking(int **input, int **output, int rows, int cols){
+	int** temp = createMatrix(rows,cols,0);
+	gaussian_blur(input, temp, rows, cols);
+	int** highpass = createMatrix(rows,cols,0);
+	substractvalues(input, temp, highpass, rows, cols);
+	addvalues(input,highpass,output,rows,cols);
+}
+
+void highboost_filter(int **input, int **output, int rows, int cols, float alpha){
+	int** temp = createMatrix(rows,cols,0);
+	gaussian_blur(input, temp, rows, cols);
+	int** highpass = createMatrix(rows,cols,0);
+	substractvalues(input, temp, highpass, rows, cols);
+	multiplication(input,alpha-1,temp,rows);
+	addvalues(temp,highpass,output,rows,cols);
 }
 
 void edge_gradient(int **input, int **output, float Threshold, int rows, int cols){
@@ -570,6 +688,254 @@ void gaussian_blur(int **input, int **output, int rows, int cols){
 	kernel[2][0]=1.0/16;
 	kernel[2][1]=1.0/8;
 	kernel[2][2]=1.0/16;
-	printmatrix(kernel,3,3);
+	// printmatrix(kernel,3,3);
 	convolute(input,output,kernel,rows,cols);
 }
+
+void edge_laplace(int **input, int **output, int rows, int cols){
+	double** kernel = createMatrix(3,3,1.0);
+	kernel[0][0]=0;
+	kernel[0][1]=1;
+	kernel[0][2]=0;
+	kernel[1][0]=1;
+	kernel[1][1]=-4;
+	kernel[1][2]=1;
+	kernel[2][0]=0;
+	kernel[2][1]=1;
+	kernel[2][2]=0;
+	// printmatrix(kernel,3,3);
+	convolute(input,output,kernel,rows,cols);
+}
+
+void LoG(int **input, int **output, int rows, int cols){
+	int** temp = createMatrix(rows,cols,0);
+	gaussian_blur(input, temp, rows, cols);
+	edge_laplace(temp ,output,rows,cols);
+}
+
+void edge_sobel(int **input, int **output, float Threshold, int rows, int cols){
+		int convolute_x = 0; // This holds the convolution results for an index.
+        int convolute_y= 0;
+		int convoluted = 0;
+		int x, y; // Used for input matrix index
+		double** kernel_x = createMatrix(3,3,1.0);
+		kernel_x[0][0]=-1;
+		kernel_x[0][1]=0;
+		kernel_x[0][2]=1;
+		kernel_x[1][0]=-2;
+		kernel_x[1][1]=0;
+		kernel_x[1][2]=2;
+		kernel_x[2][0]=-1;
+		kernel_x[2][1]=0;
+		kernel_x[2][2]=1;
+		double** kernel_y = createMatrix(3,3,1.0);
+		kernel_y[0][0]=1;
+		kernel_y[0][1]=2;
+		kernel_y[0][2]=1;
+		kernel_y[1][0]=0;
+		kernel_y[1][1]=0;
+		kernel_y[1][2]=0;
+		kernel_y[2][0]=-1;
+		kernel_y[2][1]=-2;
+		kernel_y[2][2]=-1;
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+				x = i-1;
+                y = j-1;
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute_x += kernel_x[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+
+				x = i-1;
+                y = j-1;
+				for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute_y += kernel_y[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+				convoluted = abs(convolute_x) + abs(convolute_y);
+				if(convoluted>=Threshold){
+					output[i][j] = 255; 
+				}
+				else{
+					output[i][j]= 0;
+				}
+				
+				convolute_x = 0;
+				convolute_y = 0;
+                convoluted = 0; // Needed before we move on to the next index.
+            }
+        }
+}
+
+void edge_prewitt(int **input, int **output, float Threshold, int rows, int cols){
+		int convolute_x = 0; // This holds the convolution results for an index.
+        int convolute_y= 0;
+		int convoluted = 0;
+		int x, y; // Used for input matrix index
+		double** kernel_x = createMatrix(3,3,1.0);
+		kernel_x[0][0]=-1;
+		kernel_x[0][1]=0;
+		kernel_x[0][2]=1;
+		kernel_x[1][0]=-1;
+		kernel_x[1][1]=0;
+		kernel_x[1][2]=1;
+		kernel_x[2][0]=-1;
+		kernel_x[2][1]=0;
+		kernel_x[2][2]=1;
+		double** kernel_y = createMatrix(3,3,1.0);
+		kernel_y[0][0]=1;
+		kernel_y[0][1]=1;
+		kernel_y[0][2]=1;
+		kernel_y[1][0]=0;
+		kernel_y[1][1]=0;
+		kernel_y[1][2]=0;
+		kernel_y[2][0]=-1;
+		kernel_y[2][1]=-1;
+		kernel_y[2][2]=-1;
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+				x = i-1;
+                y = j-1;
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute_x += kernel_x[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+
+				x = i-1;
+                y = j-1;
+				for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 3; l++)
+                    {
+                        // Convolute here.
+                        convolute_y += kernel_y[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+				convoluted = abs(convolute_x) + abs(convolute_y);
+				if(convoluted>=Threshold){
+					output[i][j] = 255; 
+				}
+				else{
+					output[i][j]= 0;
+				}
+				
+				convolute_x = 0;
+				convolute_y = 0;
+                convoluted = 0; // Needed before we move on to the next index.
+            }
+        }
+}
+
+void edge_roberts(int **input, int **output, float Threshold, int rows, int cols){
+	int convolute_x = 0; // This holds the convolution results for an index.
+        int convolute_y= 0;
+		int convoluted = 0;
+		int x, y; // Used for input matrix index
+		int** kernel_x = createMatrix(2,2,1);
+		kernel_x[0][0]=1;kernel_x[1][0]=0;kernel_x[0][1]=0;kernel_x[1][1]=-1;
+		int** kernel_y = createMatrix(2,2,1);
+		kernel_y[0][0]=0;kernel_y[1][0]=-1;kernel_y[0][1]=1;kernel_y[1][1]=0;
+
+        // Fill output matrix: rows and columns are i and j respectively
+        for (int i = 1; i < rows-1; i++)
+        {
+            for (int j = 1; j < cols-1; j++)
+            {
+                
+				x = i-1;
+                y = j-1;
+                // Kernel rows and columns are k and l respectively
+                for (int k = 0; k < 2; k++)
+                {
+                    for (int l = 0; l < 2; l++)
+                    {
+                        // Convolute here.
+                        convolute_x += kernel_x[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+
+				x = i-1;
+                y = j-1;
+				for (int k = 0; k < 2; k++)
+                {
+                    for (int l = 0; l < 2; l++)
+                    {
+                        // Convolute here.
+                        convolute_y += kernel_y[k][l] * input[x][y];
+                        y++; // Move right.
+                    }
+                    x++; // Move down.
+                    y = j-1; // Restart column position
+                }
+				convoluted = abs(convolute_x) + abs(convolute_y);
+				if(convoluted>=Threshold){
+					output[i][j] = 255; 
+				}
+				else{
+					output[i][j]= 0;
+				}
+				
+				convolute_x = 0;
+				convolute_y = 0;
+                convoluted = 0; // Needed before we move on to the next index.
+            }
+        }
+}
+
+void edge_canny(int **input, int **output, float Gradient_T, float Canny_T, int rows, int cols){
+	int** temp1 = createMatrix(rows,cols,0);
+	int** temp2 = createMatrix(rows,cols,0);
+	gaussian_blur(input, temp1, rows, cols);
+	edge_roberts(temp1 ,temp2 , Gradient_T, rows, cols);
+	for(int i =1; i<rows-1; i++){
+		for(int j =1; j<cols-1; j++){
+			if(temp2[i][j] >= Canny_T){
+				output[i][j] = 255; 
+			}
+			else{
+				output[i][j]= 0;
+			}
+		}
+	}
+	
+}
+
+
